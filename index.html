@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTVK</title>
+    <link rel="shortcut icon" href="./assets/images/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/main.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="layer"></div>
+        <div class="layer"></div>
+        <div class="layer"></div>
+        <div class="layer"></div>
+        <div class="layer"></div>
+        <div class="layer"></div>
+        <div class="layer"></div>
+        <div class="introduce_box">
+            <h2 class="introduce_title">NHÓM <span style="color: #e84393;">HTVK</span></h2>
+            <form action="#">
+                <input type="url" class="linkIpt" placeholder="Enter download link..." required>
+                <button>DOWNLOAD</button>
+            </form>
+        </div>
+    </div>
+</body>
+<script src="./assets/main.js"></script>
+<script>
+    const fileInput = document.querySelector(".linkIpt")
+    const downloadBtn = document.querySelector("button")
+
+    downloadBtn.addEventListener("click", async () => {
+        try{
+            const response = await fetch(fileInput.value)
+            const file = await response.blob()
+            const link = document.createElement("a")
+            link.href = URL.createObjectURL(file)
+            link.download = new Date().getTime()
+            link.click()
+        } catch(error){
+            alert("Failed to download the file :(")
+        }
+        fileInput.value = ''
+    })
+</script>
+</html>
