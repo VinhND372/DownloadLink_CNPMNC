@@ -64,7 +64,7 @@ body{
 .introduce_content{
     margin-bottom: 15px;
 }
-.linkIpt{
+#link, #websiteUrl{
     padding: 10px;
     width: 316px;
     height: 50px;
@@ -77,18 +77,18 @@ body{
     background: #e84393;
     color: #fff;
     border-radius: 30px;
-    margin-top: 50px;
+    margin-top: 40px;
     cursor: pointer;
     animation: a_animate 2s infinite;
 }
 .introduce_box button:hover{
-    filter: drop-shadow(0 0 20px #e84393) drop-shadow(0 0 60px #e84393);
+    filter: drop-shadow(0 0 20px #e84393) drop-shadow(0 0 0px #e84393);
 }
 @keyframes a_animate{
     0%, 100%{
         transform: translateY(0);
     }
     50%{
-        transform: translateY(10px);
+        transform: translateY(5px);
     }
 }
