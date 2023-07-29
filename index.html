@@ -22,30 +22,158 @@
         <div class="layer"></div>
         <div class="introduce_box">
             <h2 class="introduce_title">NHÓM <span style="color: #e84393;">HTVK</span></h2>
-            <form action="#">
-                <input type="url" class="linkIpt" placeholder="Enter download link..." required>
-                <button>DOWNLOAD</button>
-            </form>
+            <input type="text" id="link" placeholder="Enter link here" />
+            <button onclick="downloadFile()">Download</button>
+            <!-- <input type="text" id="websiteUrl" placeholder="Enter website address" />
+            <button onclick="downloadImages()">Download Images</button> -->
         </div>
     </div>
 </body>
 <script src="./assets/main.js"></script>
-<script>
-    const fileInput = document.querySelector(".linkIpt")
-    const downloadBtn = document.querySelector("button")
 
-    downloadBtn.addEventListener("click", async () => {
-        try{
-            const response = await fetch(fileInput.value)
-            const file = await response.blob()
-            const link = document.createElement("a")
-            link.href = URL.createObjectURL(file)
-            link.download = new Date().getTime()
-            link.click()
-        } catch(error){
-            alert("Failed to download the file :(")
+<script>
+  function downloadFile() {
+    const linkInput = document.getElementById("link");
+    const link = linkInput.value.trim();
+
+    const isFolder = link.substr(link.length - 1);
+    if(isFolder == '/') {
+      downloadFolder(link)
+      return;
+    }
+
+    if (!link) {
+      alert("Please enter a valid link.");
+      return;
+    }
+    
+    const fileType = link.split('.').pop().toLowerCase();
+    switch (fileType) {
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+      case 'bmp':
+      case 'mp4':
+      case 'avi':
+      case 'mkv':
+          downloadImage(link);
+          break;
+      case 'pdf':
+          autoDownloadPDF(link);
+          break;
+      case 'doc':
+      case 'docx':
+      case 'txt':
+      case 'rtf':
+          downloadDocument(link);
+          break;
+      default:
+          downloadDocument(link);
+          break;
+    }
+    linkInput.value = '';
+  }
+
+  async function downloadImage(fileLink) {
+      const response = await fetch(fileLink);
+      const file = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(file);
+      link.download = fileLink.split('/').pop();
+      link.click();
+  }
+  function downloadDocument(fileLink){
+      const link = document.createElement("a");
+      link.href = fileLink;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  }
+  async function autoDownloadPDF(fileLink) {
+      try {
+        // Fetch the PDF content from the URL
+        const response = await fetch(fileLink);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch the PDF');
         }
-        fileInput.value = ''
-    })
+
+        const blob = await response.blob();
+
+        // Create a link element to download the PDF
+        const downloadLink = document.createElement('a');
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = fileLink.split('/').pop();
+
+        // Append the link element to the body and trigger the download
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+
+        // Clean up: remove the link element and revoke the URL
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(downloadLink.href);
+
+        console.log('PDF download completed!');
+      } catch (error) {
+        console.error('Error downloading PDF:', error.message);
+      }
+    }
+
+
+/*-----------------Download Images from website-------------------*/
+
+  // async function downloadImages() {
+  //   const websiteUrl = document.getElementById('websiteUrl').value;
+
+  //   try {
+  //     const proxyUrl = 'https://your-proxy-server.com/proxy'; // Replace with your server-side proxy URL
+
+  //     // Fetch the website's content through the proxy
+  //     const response = await fetch(proxyUrl, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ url: websiteUrl }),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch website content');
+  //     }
+
+  //     const data = await response.json();
+  //     const htmlContent = data.htmlContent;
+
+  //     // Parse the HTML content and extract image URLs
+  //     const parser = new DOMParser();
+  //     const doc = parser.parseFromString(htmlContent, 'text/html');
+  //     const imageElements = doc.querySelectorAll('img');
+  //     const imageUrls = Array.from(imageElements).map(imgElement => imgElement.src);
+
+  //     // Download each image
+  //     for (const imageUrl of imageUrls) {
+  //       const imageResponse = await fetch(imageUrl);
+
+  //       if (!imageResponse.ok) {
+  //         console.error(`Failed to download image: ${imageUrl}`);
+  //         continue; // Skip to the next image if there was an error
+  //       }
+
+  //       const blob = await imageResponse.blob();
+  //       saveAs(blob, getImageFileName(imageUrl));
+  //     }
+
+  //     console.log('Image download completed!');
+  //   } catch (error) {
+  //     console.error('Error downloading images:', error.message);
+  //   }
+  // }
+
+  // function getImageFileName(imageUrl) {
+  //   // Extract the file name from the image URL
+  //   const urlParts = imageUrl.split('/');
+  //   return urlParts[urlParts.length - 1];
+  // }
 </script>
 </html>
